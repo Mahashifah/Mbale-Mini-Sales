@@ -2,20 +2,26 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mbale Mini Sales - Buy & Sell Fast</title>
-<link rel="stylesheet" href="style.css">
-<style>.products{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px}.card{background:white;border-radius:10px;padding:10px;text-align:center;box-shadow:0 2px 5px #0002}.card img{width:100%;height:140px;object-fit:cover;border-radius:8px}.price{color:green;font-weight:bold}.btn{background:#25D366;color:white;padding:8px 12px;border-radius:20px;display:inline-block;margin-top:5px;text-decoration:none;font-size:13px}.cat-btn{padding:6px 12px;margin:3px;border:1px solid green;border-radius:20px;background:white}.cat-btn.active{background:green;color:white}.search-box{margin-top:10px}.search-box input{width:90%;padding:10px;border-radius:20px;border:none}</style>
+<title>Mbale Mini Sales - Phones, Houses, Plots</title>
+<style>
+body{margin:0;background:#f5f5f5;font-family:sans-serif}
+.header{background:#0a8a0a;color:white;text-align:center;padding:20px 10px}
+.products{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px}
+.card{background:white;border-radius:10px;padding:10px;text-align:center;box-shadow:0 2px 5px #0002}
+.card img{width:100%;height:140px;object-fit:cover;border-radius:8px}
+.price{color:green;font-weight:bold;font-size:14px}.btn{background:#25D366;color:white;padding:8px 12px;border-radius:20px;display:inline-block;margin-top:5px;text-decoration:none;font-size:13px}
+.cat-btn{padding:6px 12px;margin:3px;border:1px solid green;border-radius:20px;background:white}.cat-btn.active{background:green;color:white}
+.whatsapp-float{position:fixed;bottom:20px;right:20px;background:#25D366;color:white;padding:12px 18px;border-radius:30px;text-decoration:none;font-weight:bold;box-shadow:0 3px 10px #0003;z-index:99}
+</style>
 </head>
-<body style="margin:0;background:#f5f5f5;font-family:sans-serif">
-<header class="header" style="background:#0a8a0a;color:white;text-align:center;padding:20px 10px">
-<img src="IMG-20261008-WA4035.jpg" style="width:90px;background:white;border-radius:14px;padding:8px;margin-bottom:10px;">
+<body>
+<div class="header">
+<img src="IMG-20261008-WA4035.jpg" style="width:90px;background:white;border-radius:14px;padding:8px;">
 <h1 style="margin:5px 0">Mbale Mini Sales</h1>
-<p>Buy & Sell Fast in Mbale - Phones, Houses, Plots, Shoes...</p>
-<div class="search-box"><input type="text" id="searchInput" placeholder="Search... e.g. Tecno, House in Maluku" onkeyup="searchProducts()"></div>
-</header>
-
-<div class="container">
-<div class="categories" style="text-align:center;padding:10px;overflow-x:auto;white-space:nowrap">
+<p>Buy & Sell Fast in Mbale - Phones, Houses, Plots</p>
+<input type="text" id="searchInput" placeholder="Search... House, Plot, Tecno" onkeyup="searchProducts()" style="width:90%;padding:10px;border-radius:20px;border:none;margin-top:10px">
+</div>
+<div style="text-align:center;padding:10px;overflow-x:auto;white-space:nowrap">
 <button class="cat-btn active" onclick="filterCat('all')">All</button>
 <button class="cat-btn" onclick="filterCat('phones')">Phones</button>
 <button class="cat-btn" onclick="filterCat('shoes')">Shoes</button>
@@ -24,34 +30,26 @@
 <button class="cat-btn" onclick="filterCat('houses')">Houses</button>
 <button class="cat-btn" onclick="filterCat('plots')">Plots/Land</button>
 </div>
-<div id="products" class="products"></div>
-</div>
-
-<a href="https://wa.me/256795336227" class="whatsapp-float" style="position:fixed;bottom:20px;right:20px;background:#25D366;color:white;padding:12px 18px;border-radius:30px;text-decoration:none;font-weight:bold">WhatsApp Us</a>
-<footer style="text-align:center;padding:20px;background:#333;color:white;margin-top:20px"><p>Mbale Mini Sales © 2026 | 0795336227 | Mbale City</p><p><a href="admin.html" style="color:#aaa">Admin Login</a></p></footer>
-
+<div id="products" class="products"><p style="text-align:center;width:100%">Loading...</p></div>
+<a href="https://wa.me/256795336227" class="whatsapp-float">WhatsApp Us</a>
+<footer style="text-align:center;padding:20px;background:#333;color:white;margin-top:20px"><p>Mbale Mini Sales © 2026 | 0795336227</p><p><a href="admin.html" style="color:#aaa">Admin Login</a></p></footer>
 <script>
-const defaultItems = [
-{name:"Tecno Spark 10 Pro",price:"450,000 UGX",cat:"phones",img:"https://images.unsplash.com/photo-1592899677977-9bb10ba128a5?w=400"},
-{name:"Plot in Nkoma - 50x100",price:"15M UGX",cat:"plots",img:"https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400"},
-{name:"3 Bedroom House for Sale - Maluku",price:"120M UGX",cat:"houses",img:"https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400"},
-{name:"Nike Air Max",price:"120,000 UGX",cat:"shoes",img:"https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400"}
-];
-let items = JSON.parse(localStorage.getItem('mbale_products') || 'null') || defaultItems;
-
+const API="https://api.npoint.io/31c6242fbd3f940c951b";
+let allItems=[];
+fetch(API).then(r=>r.json()).then(data=>{allItems=data;showProducts(data);}).catch(e=>{document.getElementById('products').innerHTML='Error loading - check npoint link';});
 function showProducts(list){
 const div=document.getElementById('products');div.innerHTML="";
-list.forEach((p,i)=>{div.innerHTML+=`<div class="card" data-cat="${p.cat}"><img src="${p.img}"><h3>${p.name}</h3><p class="price">${p.price}</p><a href="https://wa.me/256795336227?text=Hi,%20I%20want%20${encodeURIComponent(p.name)}%20-%20${encodeURIComponent(p.price)}" class="btn">Order on WhatsApp</a></div>`});
+if(list.length==0){div.innerHTML="<p>No products yet</p>";return;}
+list.forEach(p=>{div.innerHTML+=`<div class="card"><img src="${p.img}" onerror="this.src='https://via.placeholder.com/400'"><h3 style="font-size:13px">${p.name}</h3><p class="price">${p.price}</p><a href="https://wa.me/256795336227?text=Hi,%20I%20want%20${encodeURIComponent(p.name)}%20-%20${p.price}" class="btn">Order on WhatsApp</a></div>`});
 }
 function filterCat(c){
 document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');
-if(c=='all') showProducts(items); else showProducts(items.filter(i=>i.cat==c));
+if(c=='all') showProducts(allItems); else showProducts(allItems.filter(i=>i.cat==c));
 }
 function searchProducts(){
 let q=document.getElementById('searchInput').value.toLowerCase();
-showProducts(items.filter(i=>i.name.toLowerCase().includes(q) || i.cat.includes(q)));
+showProducts(allItems.filter(i=>i.name.toLowerCase().includes(q) || i.cat.includes(q)));
 }
-showProducts(items);
 </script>
 </body>
 </html>
