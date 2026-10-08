@@ -3,64 +3,69 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MBALE MINI SALES | Buy & Sell Fast in Mbale</title>
+<title>Mbale Mini Sales - Buy & Sell Fast in Mbale</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<header>
-  <img src="logo.png" alt="Mbale Mini Sales Logo" style="width:90px;background:white;border-radius:14px;padding:8px;margin-bottom:10px;">
-  <h1>🛍️ MBALE MINI SALES</h1>
-  <p>Buy & Sell Fast in Mbale</p>
-  <small>Trusted marketplace for NEW & USED items from verified sources!</small>
-  <div class="badges">
-    <span>✅ No scams</span>
-    <span>💰 Fair Prices</span>
-    <span>⚡ Fast Deals</span>
+<header class="header">
+  <img src="IMG-20261008-WA4035.jpg" alt="Mbale Mini Sales Logo" style="width:90px;background:white;border-radius:14px;padding:8px;margin-bottom:10px;">
+  <h1>Mbale Mini Sales</h1>
+  <p>Buy & Sell Fast in Mbale - Phones, Shoes, Clothes, Bags</p>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search products... e.g. Tecno, Nike" onkeyup="searchProducts()">
   </div>
 </header>
 
-<div class="grid">
-  <div class="card">🏞️ Land</div>
-  <div class="card">🏠 Houses</div>
-  <div class="card">📱 Phones</div>
-  <div class="card">💻 Laptops</div>
-  <div class="card">🎧 Gadgets</div>
-  <div class="card">🛋️ Home Materials</div>
-  <div class="card">🧺 Washing Machines</div>
-  <div class="card">🏍️ Motorcycles</div>
-  <div class="card">🚗 Cars</div>
-  <div class="card">🚲 Bicycles</div>
-  <div class="card">🛏️ Pallet Beds</div>
-  <div class="card">🪑 Furniture</div>
+<div class="container">
+  <div class="categories">
+    <button class="cat-btn active" onclick="filterCat('all')">All</button>
+    <button class="cat-btn" onclick="filterCat('phones')">Phones</button>
+    <button class="cat-btn" onclick="filterCat('shoes')">Shoes</button>
+    <button class="cat-btn" onclick="filterCat('clothes')">Clothes</button>
+    <button class="cat-btn" onclick="filterCat('bags')">Bags</button>
+  </div>
+
+  <div id="products" class="products"></div>
 </div>
 
-<div class="box">
-  <h3>🛏️ Pallet Beds On Order</h3>
-  <p>Strong wood, polished. Single 180k - 220k, Double 280k - 350k. Delivery in Mbale.</p>
-  <a class="btn" href="https://wa.me/256743788078?text=Hello%20Mbale%20Mini%20Sales%20I%20want%20pallet%20bed">Order on WhatsApp</a>
-</div>
-
-<div class="box">
-  <h3>🏍️ E-Boda Delivery Available</h3>
-  <p>We deliver home items fast in Mbale - Elgon Region.</p>
-  <a class="btn" href="https://wa.me/256795336227?text=Hello%20I%20need%20boda%20delivery">Book Delivery</a>
-</div>
-
-<div class="box">
-  <h3>📲 How to Buy / Sell?</h3>
-  <p>WhatsApp us photo + price + location. We post to 61+ followers on WhatsApp Channel and now on website.</p>
-  <a class="btn" href="https://wa.me/256743788078?text=Hello%20I%20want%20to%20sell%20on%20Mbale%20Mini%20Sales">I Want To Sell</a>
-</div>
+<a href="https://wa.me/256700000000" class="whatsapp-float">WhatsApp Us</a>
 
 <footer>
-  <h3>📲 Buy. Sell. Trust.</h3>
-  <p>📍 Mbale - Elgon Region</p>
-  <p>📞 Call/WhatsApp: 0743788078 / 0795336227</p>
-  <p style="font-size:12px;margin-top:10px;opacity:0.7;">© 2026 Mbale Mini Sales - Powered by GitHub + Render</p>
+  <p>Mbale Mini Sales © 2026 | 90+ followers on WhatsApp Channel</p>
+  <p>Contact: wa.me/256700000000 | Mbale City, Uganda</p>
 </footer>
 
-<a class="wa" href="https://wa.me/256743788078">💬 WhatsApp Us</a>
+<script>
+const items = [
+  {name:"Tecno Spark 10 Pro",price:"450,000 UGX",cat:"phones",img:"https://images.unsplash.com/photo-1592899677977-9bb10ba128a5?w=400"},
+  {name:"Infinix Hot 30",price:"380,000 UGX",cat:"phones",img:"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400"},
+  {name:"Nike Air Max",price:"120,000 UGX",cat:"shoes",img:"https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400"},
+  {name:"Adidas Sneakers",price:"95,000 UGX",cat:"shoes",img:"https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400"},
+  {name:"Men's T-Shirt",price:"25,000 UGX",cat:"clothes",img:"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400"},
+  {name:"Ladies Handbag",price:"65,000 UGX",cat:"bags",img:"https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400"},
+  {name:"Samsung A14",price:"520,000 UGX",cat:"phones",img:"https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400"},
+  {name:"School Bag",price:"45,000 UGX",cat:"bags",img:"https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400"}
+];
 
+function showProducts(list){
+  const div = document.getElementById('products');
+  div.innerHTML = "";
+  list.forEach(p=>{
+    div.innerHTML += `<div class="card" data-cat="${p.cat}">
+      <img src="${p.img}"><h3>${p.name}</h3><p class="price">${p.price}</p>
+      <a href="https://wa.me/256700000000?text=Hi%20Mbale%20Mini%20Sales,%20I%20want%20${encodeURIComponent(p.name)}" class="btn">Order on WhatsApp</a></div>`;
+  });
+}
+function filterCat(c){
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  if(c=='all') showProducts(items); else showProducts(items.filter(i=>i.cat==c));
+}
+function searchProducts(){
+  let q = document.getElementById('searchInput').value.toLowerCase();
+  showProducts(items.filter(i=>i.name.toLowerCase().includes(q)));
+}
+showProducts(items);
+</script>
 </body>
 </html>
