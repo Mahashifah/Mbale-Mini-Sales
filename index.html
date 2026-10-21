@@ -16,7 +16,7 @@ input{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px solid #c
 .cat-wrap{display:flex;flex-wrap:wrap;justify-content:center;padding:8px}
 </style></head><body>
 <div class="topbar"><span>Mbale Mini Sales</span><div><span id="userInfo"></span> <button onclick="openAuth()" style="background:white;color:green;border:none;padding:5px 12px;border-radius:15px;font-weight:bold" id="loginBtn">Login / Register</button><button onclick="logout()" id="logoutBtn" style="display:none;background:red;color:white;border:none;padding:5px 10px;border-radius:15px">Logout</button></div></div>
-<div class="header"><img src="logo.jpg" style="width:80px;background:white;border-radius:10px;padding:5px" onerror="this.style.display='none'"><h2 style="margin:5px">Buy & Sell Fast in Mbale</h2><input id="searchInput" placeholder="Search plots, cars, phones..." onkeyup="searchProducts()" style="width:90%;padding:10px;border-radius:20px;border:none"></div>
+<div class="header"><h2 style="margin:5px">Buy & Sell Fast in Mbale</h2><input id="searchInput" placeholder="Search plots, cars, phones..." onkeyup="searchProducts()" style="width:90%;padding:10px;border-radius:20px;border:none"></div>
 <div class="cat-wrap">
 <button class="cat-btn active" onclick="filterCat('all')">All</button>
 <button class="cat-btn" onclick="filterCat('phones')">Phones</button>
@@ -35,34 +35,30 @@ input{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px solid #c
 <div id="products" class="products">Loading...</div>
 <div class="modal" id="authModal"><div class="modal-content">
 <h3 id="authTitle">Create Account</h3>
-<input id="authName" placeholder="Your Name (for Register)">
+<input id="authName" placeholder="Your Name">
 <input id="authPhone" placeholder="Phone: 0795336227">
 <input id="authPass" type="password" placeholder="Password">
-<button onclick="doAuth()" style="width:100%;padding:10px;background:green;color:white;border:none;border-radius:8px;margin-top:8px" id="authActionBtn">Register / Login</button>
+<button onclick="doAuth()" style="width:100%;padding:10px;background:green;color:white;border:none;border-radius:8px;margin-top:8px">Register / Login</button>
 <p style="font-size:12px;text-align:center;margin-top:8px"><a href="#" onclick="toggleAuthMode()">Have account? Login / No account? Register</a></p>
 <p id="authMsg" style="color:red;font-size:13px"></p>
 <button onclick="closeAuth()" style="width:100%;background:#ccc;margin-top:5px;padding:8px;border:none;border-radius:8px">Close</button>
 </div></div>
-<footer style="text-align:center;padding:15px;background:#333;color:white"><p>0795336227 | 0743788078</p><a href="admin.html" style="color:#aaa">Admin Panel</a></footer>
+<footer style="text-align:center;padding:15px;background:#333;color:white"><p>📞 0795336227 | 0743788078</p><p style="font-size:12px;color:#ccc">© 2026 Mbale Mini Sales - Buy & Sell Fast in Mbale</p></footer>
 <script>
 const API="https://api.npoint.io/31c6242fbd3f940c951b";
 let products=[], users=[], mode='register', currentUser=JSON.parse(localStorage.getItem('mbaleUser')||'null');
 function updateUI(){if(currentUser){document.getElementById('userInfo').innerText='Hi, '+currentUser.name;document.getElementById('loginBtn').style.display='none';document.getElementById('logoutBtn').style.display='inline';}else{document.getElementById('userInfo').innerText='';document.getElementById('loginBtn').style.display='inline';document.getElementById('logoutBtn').style.display='none';}}
 updateUI();
-async function loadData(){
-let r=await fetch(API);let data=await r.json();
-if(Array.isArray(data)){products=data;users=[];}else{products=data.products||[];users=data.users||[];}
-showProducts(products);
-}
+async function loadData(){let r=await fetch(API);let data=await r.json();if(Array.isArray(data)){products=data;users=[];}else{products=data.products||[];users=data.users||[];}showProducts(products);}
 function showProducts(list){let d=document.getElementById('products');d.innerHTML='';if(!list.length){d.innerHTML='<p>No products</p>';return;}list.forEach(p=>{d.innerHTML+=`<div class=card><img src="${p.img}" onerror="this.src='https://via.placeholder.com/300'"><h3 style=font-size:13px>${p.name}</h3><p class=price>${p.price}</p><p style=font-size:11px;color:#666>${p.cat}</p><button class=btn onclick="orderProduct('${p.name.replace(/'/g,"")}','${p.price}')">Order on WhatsApp</button></div>`});}
-function orderProduct(name,price){if(!currentUser){alert('Please Login / Register first with phone number!');openAuth();return;}let msg=`Hi, I am ${currentUser.name} (${currentUser.phone}). I want ${name} - ${price}. From Mbale Mini Sales website`;window.open(`https://wa.me/256795336227?text=${encodeURIComponent(msg)}`,'_blank');}
+function orderProduct(name,price){if(!currentUser){alert('Please Login / Register first!');openAuth();return;}let msg=`Hi, I am ${currentUser.name} (${currentUser.phone}). I want ${name} - ${price}. From Mbale Mini Sales`;window.open(`https://wa.me/256795336227?text=${encodeURIComponent(msg)}`,'_blank');}
 function openAuth(){document.getElementById('authModal').style.display='flex';}function closeAuth(){document.getElementById('authModal').style.display='none';}
 function toggleAuthMode(){mode=mode==='register'?'login':'register';document.getElementById('authTitle').innerText=mode==='register'?'Create Account':'Login';document.getElementById('authName').style.display=mode==='register'?'block':'none';}
 async function doAuth(){
 let name=document.getElementById('authName').value.trim(),phone=document.getElementById('authPhone').value.trim(),pass=document.getElementById('authPass').value.trim();
 if(!phone||!pass){document.getElementById('authMsg').innerText='Enter phone and password';return;}
-if(mode==='register'){if(!name){document.getElementById('authMsg').innerText='Enter your name';return;}if(users.find(u=>u.phone===phone)){document.getElementById('authMsg').innerText='Phone already registered, please Login';mode='login';document.getElementById('authTitle').innerText='Login';return;}
-users.push({name,phone,password:pass});await saveData();currentUser={name,phone};localStorage.setItem('mbaleUser',JSON.stringify(currentUser));document.getElementById('authMsg').innerText='Account created!';updateUI();closeAuth();}
+if(mode==='register'){if(!name){document.getElementById('authMsg').innerText='Enter your name';return;}if(users.find(u=>u.phone===phone)){document.getElementById('authMsg').innerText='Phone already registered, please Login';mode='login';return;}
+users.push({name,phone,password:pass});await saveData();currentUser={name,phone};localStorage.setItem('mbaleUser',JSON.stringify(currentUser));updateUI();closeAuth();}
 else{let u=users.find(u=>u.phone===phone&&u.password===pass);if(!u){document.getElementById('authMsg').innerText='Wrong phone or password';return;}currentUser={name:u.name,phone:u.phone};localStorage.setItem('mbaleUser',JSON.stringify(currentUser));updateUI();closeAuth();}
 }
 async function saveData(){await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({products,users})});}
