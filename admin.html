@@ -2,25 +2,35 @@
 <h3>Mbale Mini Sales - Admin</h3>
 <input id="name" placeholder="Product Name">
 <input id="price" placeholder="Price e.g. 15M UGX">
-<select id="cat"><option value="phones">Phones</option><option value="gadgets">Gadgets</option><option value="electricals">Electricals</option><option value="houses">Houses</option><option value="plots">Plots</option><option value="rentals">Rentals</option><option value="cars">Cars</option><option value="motorcycles">Motorcycles</option><option value="shoes">Shoes</option><option value="clothes">Clothes</option><option value="bags">Bags</option><option value="advertising">Advertising</option></select>
+<select id="cat">
+<option value="phones">Phones</option>
+<option value="gadgets">Gadgets</option>
+<option value="electricals">Electricals</option>
+<option value="houses">Houses</option>
+<option value="plots">Plots</option>
+<option value="rentals">Rentals</option>
+<option value="cars">Cars</option>
+<option value="motorcycles">Motorcycles</option>
+<option value="shoes">Shoes</option>
+<option value="clothes">Clothes</option>
+<option value="bags">Bags</option>
+<option value="advertising">Advertising</option>
+<option value="others">Others</option>
+</select>
 <input id="img" placeholder="Image link - optional">
 <input type="file" id="file" accept="image/*">
 <button onclick="addProduct()">Add Product LIVE</button>
 <p id="status"></p>
 <h4>Live Products (<span id="count">0</span>)</h4><div id="list"></div>
-<h4>Registered Customers - With Passwords</h4><div id="usersList"></div>
+<h4>Registered Customers</h4><div id="usersList"></div>
 <a href="index.html">View Site</a>
 <script>
 const API="https://api.npoint.io/a3c7715c362f130b7d58";let products=[],users=[],tempImg="";
 document.getElementById('file').addEventListener('change',e=>{let r=new FileReader();r.onload=ev=>tempImg=ev.target.result;document.getElementById('status').innerText='Image ready!';r.readAsDataURL(e.target.files[0]);});
 async function load(){let res=await fetch(API);let data=await res.json();products=data.products||[];users=data.users||[];render();}
-function render(){
-document.getElementById('count').innerText=products.length;
-document.getElementById('list').innerHTML=products.map((p,i)=>`<div class=item><img src="${p.img}" style=width:50px;height:50px;object-fit:cover;border-radius:5px><div style=flex:1>${p.name}<br><small>${p.price} - ${p.cat}</small></div><button onclick="del(${i})" style=width:auto;background:red>Del</button></div>`).join('');
-document.getElementById('usersList').innerHTML=users.length?users.map((u,i)=>`<div class=item style=flex-direction:column;align-items:flex-start><b>👤 ${u.name}</b><span>📞 ${u.phone}</span><span>🔑 Password: <b style=color:red>${u.password}</b></span></div>`).join(''):'<p>No users yet - register to see</p>';
-}
-async function save(){document.getElementById('status').innerText='Saving...';await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({products,users})});document.getElementById('status').innerText='Saved! Live now!';}
-async function addProduct(){let n=document.getElementById('name').value,pr=document.getElementById('price').value,c=document.getElementById('cat').value,imgL=document.getElementById('img').value;let f=tempImg||imgL;if(!n||!pr||!f){alert('Fill Name, Price, and Image');return;}products.unshift({name:n,price:pr,cat:c,img:f});await save();render();document.getElementById('name').value='';document.getElementById('price').value='';tempImg='';}
-async function del(i){if(!confirm('Delete this product?'))return;products.splice(i,1);await save();render();}
+function render(){document.getElementById('count').innerText=products.length;document.getElementById('list').innerHTML=products.map((p,i)=>`<div class=item><img src="${p.img}" style=width:50px;height:50px;object-fit:cover;border-radius:5px><div style=flex:1>${p.name}<br><small>${p.price} - ${p.cat}</small></div><button onclick="del(${i})" style=width:auto;background:red>Del</button></div>`).join('');document.getElementById('usersList').innerHTML=users.length?users.map(u=>`<div class=item style=flex-direction:column;align-items:flex-start><b>👤 ${u.name}</b><span>📞 ${u.phone}</span><span>🔑 ${u.password}</span></div>`).join(''):'<p>No users yet</p>';}
+async function save(){document.getElementById('status').innerText='Saving...';await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({products,users})});document.getElementById('status').innerText='Saved!';}
+async function addProduct(){let n=document.getElementById('name').value,pr=document.getElementById('price').value,c=document.getElementById('cat').value,imgL=document.getElementById('img').value;let f=tempImg||imgL;if(!n||!pr||!f){alert('Fill Name, Price, Image');return;}products.unshift({name:n,price:pr,cat:c,img:f});await save();render();document.getElementById('name').value='';document.getElementById('price').value='';tempImg='';}
+async function del(i){if(!confirm('Delete?'))return;products.splice(i,1);await save();render();}
 load();
 </script></body></html>
