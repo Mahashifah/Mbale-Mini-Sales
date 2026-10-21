@@ -1,40 +1,51 @@
-<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Admin FIXED</title><style>body{font-family:sans-serif;padding:12px;background:#eee}input,select,textarea{width:100%;padding:10px;margin:5px 0;border-radius:8px;border:1px solid #ccc;box-sizing:border-box}button{padding:10px;background:green;color:white;border:none;border-radius:8px;margin-top:5px;width:100%;cursor:pointer}.item{background:white;padding:8px;margin:6px 0;border-radius:8px;display:flex;gap:8px;align-items:center}</style></head><body>
-<h3>Mbale Mini Sales - Admin COMPRESSED</h3>
+<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Admin - Mbale Mini Sales</title><style>body{font-family:sans-serif;padding:12px;background:#eee}input,select,textarea{width:100%;padding:10px;margin:5px 0;border-radius:8px;border:1px solid #ccc;box-sizing:border-box}button{padding:10px;background:green;color:white;border:none;border-radius:8px;margin-top:5px;width:100%;cursor:pointer}.item{background:white;padding:8px;margin:6px 0;border-radius:8px;display:flex;gap:8px;align-items:center}</style></head><body>
+<h3>Mbale Mini Sales - Admin</h3>
 <input id="name" placeholder="Product Name">
 <input id="price" placeholder="Price e.g. 500k UGX">
 <select id="cat"><option value="phones">Phones</option><option value="gadgets">Gadgets</option><option value="electricals">Electricals</option><option value="houses">Houses</option><option value="plots">Plots</option><option value="rentals">Rentals</option><option value="cars">Cars</option><option value="motorcycles">Motorcycles</option><option value="shoes">Shoes</option><option value="clothes">Clothes</option><option value="bags">Bags</option><option value="advertising">Advertising</option><option value="others">Others</option></select>
 <select id="cond"><option value="Brand New">✅ Brand New</option><option value="Slightly Used">♻️ Slightly Used</option></select>
-<textarea id="desc" placeholder="Description..." rows="4" style="border:2px solid green"></textarea>
-<input id="img" placeholder="Image link - optional, BEST METHOD">
+<textarea id="desc" placeholder="Description - e.g. Size, location, condition details..." rows="4" style="border:2px solid green"></textarea>
+<input id="img" placeholder="Image link - BEST METHOD for big photos">
 <input type="file" id="file" accept="image/*">
 <button onclick="addProduct()">Add Product LIVE</button>
-<p id="status"></p>
-<h4>Live (<span id="count">0</span>)</h4><div id="list"></div>
+<p id="status" style="font-weight:bold;color:green"></p>
+<h4>Live Products (<span id="count">0</span>)</h4><div id="list"></div>
+<h4>Customers (<span id="uCount">0</span>)</h4><div id="usersList"></div>
+<br>
+<a href="index.html" style="display:block;text-align:center;background:#0a8a0a;color:white;padding:12px;border-radius:10px;text-decoration:none;font-weight:bold">🌐 View Site</a>
+<a href="download.html" style="display:block;text-align:center;background:#FFEB3B;color:black;padding:10px;border-radius:10px;text-decoration:none;font-weight:bold;margin-top:8px">📥 View Download Page</a>
+
 <script>
 const API="https://api.npoint.io/a3c7715c362f130b7d58";let products=[],users=[],tempImg="";
 document.getElementById('file').addEventListener('change',e=>{
  let file=e.target.files[0];
+ if(!file)return;
  let reader=new FileReader();
  reader.onload=ev=>{
   let img=new Image();
   img.onload=()=>{
    let canvas=document.createElement('canvas');
-   let max=500;
+   let max=600;
    let w=img.width, h=img.height;
    if(w>h){if(w>max){h*=max/w;w=max}}else{if(h>max){w*=max/h;h=max}}
    canvas.width=w;canvas.height=h;
    canvas.getContext('2d').drawImage(img,0,0,w,h);
-   tempImg=canvas.toDataURL('image/jpeg',0.5);
-   document.getElementById('status').innerText='Compressed ready! Size: '+Math.round(tempImg.length/1024)+'KB';
+   tempImg=canvas.toDataURL('image/jpeg',0.6);
+   document.getElementById('status').innerText='✅ Compressed ready! Size: '+Math.round(tempImg.length/1024)+'KB - Now click Add Product';
   };
   img.src=ev.target.result;
  };
  reader.readAsDataURL(file);
 });
-async function load(){let res=await fetch(API);let data=await res.json();products=data.products||[];users=data.users||[];render();}
-function render(){document.getElementById('count').innerText=products.length;document.getElementById('list').innerHTML=products.map((p,i)=>`<div class=item><img src="${p.img}" style=width:50px;height:50px;object-fit:cover;border-radius:5px><div style=flex:1><b>${p.name}</b><br><small>${p.price} - ${p.cat}</small></div><button onclick="del(${i})" style=width:auto;background:red>Del</button></div>`).join('');}
-async function save(){document.getElementById('status').innerText='Saving...';await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({products,users})});document.getElementById('status').innerText='Saved!';}
-async function addProduct(){let n=document.getElementById('name').value,pr=document.getElementById('price').value,c=document.getElementById('cat').value,co=document.getElementById('cond').value,de=document.getElementById('desc').value,imgL=document.getElementById('img').value;let f=tempImg||imgL;if(!n||!pr||!f){alert('Fill Name, Price, Image');return;}if(f.length>90000){alert('Image still too big! Use Image Link method instead');return;}products.unshift({name:n,price:pr,cat:c,cond:co,desc:de,img:f});await save();render();document.getElementById('name').value='';document.getElementById('price').value='';document.getElementById('desc').value='';tempImg='';}
-async function del(i){if(!confirm('Delete?'))return;products.splice(i,1);await save();render();}
+async function load(){let res=await fetch(API+"?t="+Date.now(),{cache:"no-store"});let data=await res.json();products=data.products||[];users=data.users||[];render();}
+function render(){
+ document.getElementById('count').innerText=products.length;
+ document.getElementById('uCount').innerText=users.length;
+ document.getElementById('list').innerHTML=products.map((p,i)=>`<div class=item><img src="${p.img}" style=width:50px;height:50px;object-fit:cover;border-radius:5px onerror="this.src='https://via.placeholder.com/50'"><div style=flex:1><b>${p.name}</b><br><small>${p.price} - ${p.cat} - ${p.cond||''}</small><br><small style=color:#666>${(p.desc||'').substring(0,40)}</small></div><button onclick="del(${i})" style=width:auto;background:red>Del</button></div>`).join('');
+ document.getElementById('usersList').innerHTML=users.map(u=>`<div class=item><b>${u.name}</b> - ${u.phone}<br><small style=color:#666>${u.password}</small></div>`).join('') || '<p>No users yet</p>';
+}
+async function save(){document.getElementById('status').innerText='Saving...';await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({products,users})});document.getElementById('status').innerText='✅ Saved!';}
+async function addProduct(){let n=document.getElementById('name').value,pr=document.getElementById('price').value,c=document.getElementById('cat').value,co=document.getElementById('cond').value,de=document.getElementById('desc').value,imgL=document.getElementById('img').value;let f=tempImg||imgL;if(!n||!pr||!f){alert('Fill Name, Price, and Image');return;}if(f.length>95000 && f.startsWith('data:')){alert('Image still too big even after compression! Please use Image Link method. Go to imgbb.com upload and paste link.');return;}products.unshift({name:n,price:pr,cat:c,cond:co,desc:de,img:f});await save();render();document.getElementById('name').value='';document.getElementById('price').value='';document.getElementById('desc').value='';document.getElementById('img').value='';tempImg='';document.getElementById('file').value='';}
+async function del(i){if(!confirm('Delete this product?'))return;products.splice(i,1);await save();render();}
 load();
 </script></body></html>
