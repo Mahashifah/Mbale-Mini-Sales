@@ -1,35 +1,175 @@
-<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Admin - Mbale Mini Sales</title><style>body{font-family:sans-serif;padding:12px;background:#eee}input,select{width:100%;padding:10px;margin:5px 0;border-radius:8px;border:1px solid #ccc;box-sizing:border-box}button{padding:10px;background:green;color:white;border:none;border-radius:8px;margin-top:5px;width:100%;cursor:pointer}.item{background:white;padding:8px;margin:6px 0;border-radius:8px;display:flex;gap:8px;align-items:center}</style></head><body>
-<h3>Mbale Mini Sales - Admin</h3>
-<input id="name" placeholder="Product Name e.g. Plot in Nkoma">
-<input id="price" placeholder="Price e.g. 15M UGX">
-<select id="cat">
-<option value="phones">Phones</option>
-<option value="gadgets">Gadgets</option>
-<option value="electricals">Electricals</option>
-<option value="houses">Houses</option>
-<option value="plots">Plots</option>
-<option value="rentals">Rentals</option>
-<option value="cars">Cars</option>
-<option value="motorcycles">Motorcycles</option>
-<option value="shoes">Shoes</option>
-<option value="clothes">Clothes</option>
-<option value="bags">Bags</option>
-<option value="advertising">Advertising</option>
-</select>
-<input id="img" placeholder="Image link (imgbb.com) - optional if you choose file">
-<input type="file" id="file" accept="image/*">
-<button onclick="addProduct()">Add Product LIVE</button>
-<p id="status"></p>
-<h4>Live Products (<span id="count">0</span>)</h4><div id="list"></div>
-<h4>Registered Customers</h4><div id="usersList"></div>
-<a href="index.html">View Site</a> | <a href="https://mahashifah.github.io/Mbale-Mini-Sales/">Live Site</a>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mbale Mini Sales - Buy & Sell Fast in Mbale</title>
+<style>
+body{font-family:Arial;margin:0;background:#f5f5f5}
+header{background:#0f8c3b;color:white;padding:12px;text-align:center;position:sticky;top:0;z-index:10}
+.top-bar{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:white;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.categories{display:flex;overflow-x:auto;gap:8px;padding:10px;background:white;white-space:nowrap}
+.cat-btn{padding:8px 14px;border-radius:20px;border:1px solid #0f8c3b;background:white;color:#0f8c3b;cursor:pointer}
+.cat-btn.active{background:#0f8c3b;color:white}
+.search-box{padding:10px;text-align:center;background:white}
+.search-box input{width:90%;padding:10px;border-radius:20px;border:1px solid #ccc}
+.products{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px}
+.product-card{background:white;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.product-card img{width:100%;height:160px;object-fit:cover}
+.product-info{padding:8px}
+.price{color:#0f8c3b;font-weight:bold}
+.btn-wa{background:#25D366;color:white;border:none;padding:8px;width:100%;border-radius:5px;margin-top:5px;cursor:pointer}
+#authModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);justify-content:center;align-items:center;z-index:20}
+.modal{background:white;padding:20px;border-radius:10px;width:85%;max-width:320px}
+.modal input{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:5px}
+</style>
+</head>
+<body>
+
+<header>
+<h2 style="margin:0">Mbale Mini Sales</h2>
+<small>Buy & Sell Fast in Mbale</small>
+</header>
+
+<div class="top-bar">
+<div id="userStatus">Welcome Guest</div>
+<button onclick="openAuth()" id="loginBtn" style="background:#0f8c3b;color:white;border:none;padding:6px 12px;border-radius:5px">Login / Register</button>
+<button onclick="logout()" id="logoutBtn" style="display:none;background:red;color:white;border:none;padding:6px 12px;border-radius:5px">Logout</button>
+</div>
+
+<div class="search-box">
+<input type="text" id="searchInput" placeholder="Search plots, cars, boda, phones..." onkeyup="filterProducts()">
+</div>
+
+<div class="categories" id="catBar">
+<button class="cat-btn active" onclick="filterCat('all')">All</button>
+<button class="cat-btn" onclick="filterCat('plots')">Plots</button>
+<button class="cat-btn" onclick="filterCat('houses')">Houses</button>
+<button class="cat-btn" onclick="filterCat('cars')">Cars</button>
+<button class="cat-btn" onclick="filterCat('motorcycles')">Motorcycles</button>
+<button class="cat-btn" onclick="filterCat('phones')">Phones</button>
+<button class="cat-btn" onclick="filterCat('electricals')">Electricals</button>
+<button class="cat-btn" onclick="filterCat('gadgets')">Gadgets</button>
+<button class="cat-btn" onclick="filterCat('rentals')">Rentals</button>
+<button class="cat-btn" onclick="filterCat('advertising')">Advertising</button>
+</div>
+
+<div class="products" id="productList"></div>
+
+<!-- Login Modal -->
+<div id="authModal">
+<div class="modal">
+<h3>Login / Register</h3>
+<input id="regName" placeholder="Your Name e.g. Mahad">
+<input id="regPhone" placeholder="Phone e.g. 0700000000" type="tel">
+<input id="regPass" placeholder="Password" type="password">
+<button onclick="registerUser()" style="width:100%;padding:10px;background:#0f8c3b;color:white;border:none;border-radius:5px;margin-top:8px">Register / Login</button>
+<button onclick="closeAuth()" style="width:100%;padding:8px;margin-top:5px;background:#eee;border:none;border-radius:5px">Cancel</button>
+<p style="font-size:12px;color:#666;text-align:center;margin-top:8px">No verification needed. Just register.</p>
+</div>
+</div>
+
 <script>
-const API="https://api.npoint.io/31c6242fbd3f940c951b";let products=[],users=[],tempImg="";
-document.getElementById('file').addEventListener('change',e=>{let r=new FileReader();r.onload=ev=>tempImg=ev.target.result;document.getElementById('status').innerText='Image ready!';r.readAsDataURL(e.target.files[0]);});
-async function load(){let res=await fetch(API);let data=await res.json();if(Array.isArray(data)){products=data;users=[];}else{products=data.products||[];users=data.users||[];}render();}
-function render(){document.getElementById('count').innerText=products.length;document.getElementById('list').innerHTML=products.map((p,i)=>`<div class=item><img src="${p.img}" style=width:50px;height:50px;object-fit:cover;border-radius:5px><div style=flex:1>${p.name}<br><small>${p.price} - ${p.cat}</small></div><button onclick="del(${i})" style=width:auto;background:red>Del</button></div>`).join('');document.getElementById('usersList').innerHTML=users.length?users.map(u=>`<div class=item>👤 ${u.name} - ${u.phone}</div>`).join(''):'<p>No users yet</p>';}
-async function save(){document.getElementById('status').innerText='Saving...';await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({products,users})});document.getElementById('status').innerText='Saved! Live now!';}
-async function addProduct(){let n=document.getElementById('name').value,pr=document.getElementById('price').value,c=document.getElementById('cat').value,imgL=document.getElementById('img').value;let f=tempImg||imgL;if(!n||!pr||!f){alert('Fill Name, Price, and Image');return;}products.unshift({name:n,price:pr,cat:c,img:f});await save();render();document.getElementById('name').value='';document.getElementById('price').value='';tempImg='';}
-async function del(i){if(!confirm('Delete this product?'))return;products.splice(i,1);await save();render();}
-load();
-</script></body></html>
+let currentCat='all';
+let searchText='';
+
+function getProducts(){ return JSON.parse(localStorage.getItem('mbale_products') || '[]'); }
+
+function renderProducts(){
+ let all = getProducts();
+ let list = document.getElementById('productList');
+ list.innerHTML='';
+ let filtered = all.filter(p=>{
+   let catMatch = currentCat==='all' || p.category===currentCat;
+   let searchMatch = (p.name+p.price).toLowerCase().includes(searchText.toLowerCase());
+   return catMatch && searchMatch;
+ });
+ if(filtered.length===0){
+   list.innerHTML='<p style="grid-column:span 2;text-align:center;padding:20px">No products found in this category.</p>';
+   return;
+ }
+ filtered.forEach(p=>{
+   list.innerHTML+=`
+   <div class="product-card">
+   <img src="${p.image}" onerror="this.src='https://via.placeholder.com/300'">
+   <div class="product-info">
+   <div style="font-size:14px;font-weight:bold">${p.name}</div>
+   <div class="price">${p.price}</div>
+   <div style="font-size:11px;color:#777">${p.category}</div>
+   <button class="btn-wa" onclick="orderWhatsApp('${p.name}','${p.price}')">Order on WhatsApp</button>
+   </div>
+   </div>`;
+ });
+}
+
+function filterCat(cat){
+ currentCat=cat;
+ document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+ event.target.classList.add('active');
+ renderProducts();
+}
+function filterProducts(){
+ searchText=document.getElementById('searchInput').value;
+ renderProducts();
+}
+
+function openAuth(){ document.getElementById('authModal').style.display='flex'; }
+function closeAuth(){ document.getElementById('authModal').style.display='none'; }
+
+function registerUser(){
+ let name=document.getElementById('regName').value.trim();
+ let phone=document.getElementById('regPhone').value.trim();
+ let pass=document.getElementById('regPass').value.trim();
+ if(!name||!phone||!pass){ alert('Fill all fields'); return; }
+ let users=JSON.parse(localStorage.getItem('mbale_users')||'[]');
+ let existing=users.find(u=>u.phone===phone);
+ if(!existing){
+   users.push({name,phone,pass});
+   localStorage.setItem('mbale_users',JSON.stringify(users));
+ }
+ localStorage.setItem('mbale_current_user',JSON.stringify({name,phone}));
+ closeAuth();
+ updateUserStatus();
+ alert('Welcome '+name+'! You can now order.');
+}
+
+function updateUserStatus(){
+ let curr=JSON.parse(localStorage.getItem('mbale_current_user')||'null');
+ if(curr){
+   document.getElementById('userStatus').innerText='Hi, '+curr.name;
+   document.getElementById('loginBtn').style.display='none';
+   document.getElementById('logoutBtn').style.display='block';
+ } else {
+   document.getElementById('userStatus').innerText='Welcome Guest';
+   document.getElementById('loginBtn').style.display='block';
+   document.getElementById('logoutBtn').style.display='none';
+ }
+}
+
+function logout(){
+ localStorage.removeItem('mbale_current_user');
+ updateUserStatus();
+}
+
+function orderWhatsApp(name,price){
+ let curr=JSON.parse(localStorage.getItem('mbale_current_user')||'null');
+ if(!curr){ alert('Please Login / Register first to order'); openAuth(); return; }
+ let msg=`Hi, I am ${curr.name} (${curr.phone}). I want ${name} - ${price}. From Mbale Mini Sales website`;
+ let url=`https://wa.me/256700000000?text=${encodeURIComponent(msg)}`;
+ window.open(url,'_blank');
+}
+
+// init default products if empty
+if(getProducts().length===0){
+ let defaults=[
+ {name:'Plot in Nkoma 50x100',price:'15M UGX',category:'plots',image:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400'},
+ {name:'3 Bedroom House Maluku',price:'120M UGX',category:'houses',image:'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400'}
+ ];
+ localStorage.setItem('mbale_products',JSON.stringify(defaults));
+}
+
+updateUserStatus();
+renderProducts();
+</script>
+</body>
+</html>
