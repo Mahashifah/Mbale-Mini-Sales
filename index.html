@@ -27,7 +27,6 @@ input,textarea{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px
 .apk-banner a{background:#0a8a0a;color:white;padding:4px 12px;border-radius:20px;text-decoration:none;margin-left:8px}
 </style></head><body>
 
-<!-- APK CONNECTED BANNER -->
 <div class="apk-banner">📱 Android App Ready! <a href="https://github.com/Mahashifah/Mbale-Mini-Sales/releases/download/v1.0/_Mbale_Mini_Sales_20313954.apk">📥 Download APK 31.6MB</a></div>
 
 <div id="installScreen"><div class="installBox"><img src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png" style="width:90px"><h2 style="color:#0a8a0a">Mbale Mini Sales</h2><p><b>Buy & Sell Fast in Mbale</b></p>
@@ -37,7 +36,7 @@ input,textarea{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px
 <p id="installMsg" style="color:green;font-weight:bold;font-size:13px"></p><div style="margin-top:10px"><button onclick="continueToSite()" style="background:none;border:none;color:#666;text-decoration:underline;cursor:pointer;font-size:13px">Skip & Continue to Website</button></div></div></div>
 
 <div class="topbar"><span>Mbale Mini Sales</span><div><span id="userInfo"></span> <a href="download.html" style="background:#FFEB3B;color:black;padding:4px 10px;border-radius:15px;text-decoration:none;font-weight:bold;font-size:12px;margin-right:5px">📥 APK</a><button onclick="openAuth('register')" style="background:white;color:green;border:none;padding:5px 12px;border-radius:15px;font-weight:bold" id="loginBtn">Login</button><button onclick="logout()" id="logoutBtn" style="display:none;background:red;color:white;border:none;padding:5px 10px;border-radius:15px">Logout</button></div></div>
-<div class="header"><h2 style="margin:5px">Buy & Sell Fast in Mbale</h2><input id="searchInput" placeholder="Search..." onkeyup="searchProducts()" style="width:90%;padding:10px;border-radius:20px;border:none"></div>
+<div class="header"><h2 style="margin:5px">Buy & Sell Fast in Mbale</h2><input id="searchInput" placeholder="Search..." onkeyup="searchProducts()" style="width:90%;padding:10px;border-radius:20px;border:none"><br><button onclick="loadData()" style="margin-top:8px;background:white;color:green;border:none;padding:5px 15px;border-radius:15px;font-size:12px">🔄 Refresh Products</button></div>
 <div class="cat-wrap">
 <button class="cat-btn active" onclick="filterCat('all')">All</button><button class="cat-btn" onclick="filterCat('phones')">Phones</button><button class="cat-btn" onclick="filterCat('gadgets')">Gadgets</button><button class="cat-btn" onclick="filterCat('electricals')">Electricals</button><button class="cat-btn" onclick="filterCat('houses')">Houses</button><button class="cat-btn" onclick="filterCat('plots')">Plots</button><button class="cat-btn" onclick="filterCat('rentals')">Rentals</button><button class="cat-btn" onclick="filterCat('cars')">Cars</button><button class="cat-btn" onclick="filterCat('motorcycles')">Motorcycles</button><button class="cat-btn" onclick="filterCat('shoes')">Shoes</button><button class="cat-btn" onclick="filterCat('clothes')">Clothes</button><button class="cat-btn" onclick="filterCat('bags')">Bags</button><button class="cat-btn" onclick="filterCat('advertising')">Advertising</button><button class="cat-btn" onclick="filterCat('others')">Others</button>
 </div>
@@ -58,7 +57,14 @@ window.addEventListener('beforeinstallprompt', e=>{e.preventDefault();deferredPr
 document.getElementById('installBtnMain').addEventListener('click', async()=>{if(deferredPrompt){deferredPrompt.prompt();let c=await deferredPrompt.userChoice;if(c.outcome==='accepted')setTimeout(()=>continueToSite(),1000);deferredPrompt=null;}else{document.getElementById('installMsg').innerHTML='iPhone: Share → Add to Home Screen<br>Android: Menu → Add to Home Screen';}});
 function updateUI(){if(currentUser){document.getElementById('userInfo').innerText='Hi, '+currentUser.name;document.getElementById('loginBtn').style.display='none';document.getElementById('logoutBtn').style.display='inline';}else{document.getElementById('userInfo').innerText='';document.getElementById('loginBtn').style.display='inline';document.getElementById('logoutBtn').style.display='none';}}updateUI();
 function toggleEye(id){let i=document.getElementById(id);i.type=i.type==='password'?'text':'password';}
-async function loadData(){let r=await fetch(API);let data=await r.json();products=data.products||[];users=data.users||[];showProducts(products);}
+async function loadData(){
+try{
+let r=await fetch(API+"?t="+Date.now(),{cache:"no-store"});
+let data=await r.json();
+products=data.products||[];users=data.users||[];
+showProducts(products);
+}catch(e){document.getElementById('products').innerHTML='Error loading, click Refresh';}
+}
 function showProducts(list){let d=document.getElementById('products');d.innerHTML='';if(!list.length){d.innerHTML='<p style=text-align:center;width:100%>No products</p>';return;}list.forEach((p,i)=>{let cond=p.cond||'Brand New';let badgeClass=cond==='Brand New'?'badge-new':'badge-used';let shortDesc=(p.desc||'').substring(0,40);d.innerHTML+=`<div class=card><span class="badge ${badgeClass}">${cond}</span><img src="${p.img}" onclick="openDesc(${i})"><h3 style=font-size:13px>${p.name}</h3><p class=price>${p.price}</p><p class=desc>${shortDesc}${(p.desc&&p.desc.length>40)?'...':''}</p><p style=font-size:10px;color:#666>${p.cat}</p><button class=btn btn2 onclick="openDesc(${i})">View Details</button><button class=btn onclick="orderProduct('${p.name.replace(/'/g,"")}','${p.price}','${cond}')">WhatsApp</button></div>`});}
 let curProd=null;
 function openDesc(i){curProd=products[i];document.getElementById('dTitle').innerText=curProd.name;document.getElementById('dImg').src=curProd.img;document.getElementById('dPrice').innerText=curProd.price+' - '+(curProd.cat||'');document.getElementById('dCond').innerHTML=`Condition: <b style=color:${curProd.cond==='Brand New'?'green':'orange'}>${curProd.cond||'Brand New'}</b>`;document.getElementById('dDesc').innerText=curProd.desc||'No description';document.getElementById('dOrder').onclick=()=>orderProduct(curProd.name,curProd.price,curProd.cond);document.getElementById('descModal').style.display='flex';}
@@ -74,4 +80,5 @@ function logout(){localStorage.removeItem('mbaleUser');currentUser=null;updateUI
 function filterCat(c){document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');if(c==='all')showProducts(products);else showProducts(products.filter(i=>i.cat===c));}
 function searchProducts(){let q=document.getElementById('searchInput').value.toLowerCase();showProducts(products.filter(i=>i.name.toLowerCase().includes(q)||(i.desc||'').toLowerCase().includes(q)));}
 loadData();checkFirstScreen();
+setInterval(loadData,15000);
 </script></body></html>
