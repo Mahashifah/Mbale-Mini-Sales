@@ -1,1 +1,16 @@
-
+{
+  "name": "Mbale Mini Sales",
+  "short_name": "Mbale Sales",
+  "description": "Buy & Sell Fast in Mbale - Plots, Cars, Phones, Houses",
+  "start_url": "/Mbale-Mini-Sales/",
+  "display": "standalone",
+  "background_color": "#0a8a0a",
+  "theme_color": "#0a8a0a",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3081/3081559.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
