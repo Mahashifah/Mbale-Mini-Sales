@@ -1,37 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Download Mbale Mini Sales APK</title>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mbale Mini Sales</title>
+<link rel="manifest" href="manifest.json">
 <style>
-body{margin:0;font-family:system-ui;background:linear-gradient(135deg,#0a8a0a,#2ecc71);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.card{background:white;border-radius:20px;padding:30px;max-width:380px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.2)}
-.icon{width:80px;height:80px;background:#e8f5e9;border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 15px;font-size:40px}
-h1{margin:10px 0 5px;font-size:22px}
-.sub{color:#666;font-size:14px;margin-bottom:20px}
-.btn{display:block;background:#0a8a0a;color:white;padding:16px;border-radius:12px;text-decoration:none;font-weight:bold;font-size:17px;margin:15px 0}
-.btn:active{transform:scale(0.97)}
-.info{background:#f0f8f0;padding:12px;border-radius:10px;font-size:13px;text-align:left;margin-top:20px}
-.badge{display:inline-block;background:#e8f5e9;color:#0a8a0a;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:bold}
-</style>
-</head>
-<body>
-<div class="card">
-<div class="icon">🛒</div>
-<span class="badge">Latest v1.0 • 31.6 MB</span>
-<h1>Mbale Mini Sales</h1>
-<p class="sub">Buy & Sell Fast in Mbale</p>
-<a class="btn" href="https://github.com/Mahashifah/Mbale-Mini-Sales/releases/download/v1.0/_Mbale_Mini_Sales_20313954.apk">📥 Download APK Now</a>
-<p style="font-size:12px;color:#888">Free • Safe • No Ads</p>
-<div class="info">
-<b>How to Install:</b><br>
-1. Click Download APK<br>
-2. Open file when done<br>
-3. Tap <b>"Allow from this source"</b><br>
-4. Tap Install → Open App ✅
+body{margin:0;background:#f5f5f5;font-family:sans-serif}
+.header{background:#0a8a0a;color:white;text-align:center;padding:15px}
+.products{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px}
+.card{background:white;border-radius:10px;padding:10px;text-align:center;box-shadow:0 2px 5px #0002;position:relative}
+.card img{width:100%;height:140px;object-fit:cover;border-radius:8px}
+.price{color:green;font-weight:bold}.btn{background:#25D366;color:white;padding:7px 10px;border-radius:20px;display:inline-block;margin:3px;text-decoration:none;font-size:12px;border:none;cursor:pointer}
+.btn2{background:#0a8a0a}
+.topbar{background:#003300;color:white;display:flex;justify-content:space-between;padding:8px 12px;align-items:center;font-size:14px}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#0008;z-index:99;justify-content:center;align-items:center}
+.modal-content{background:white;padding:20px;border-radius:12px;width:90%;max-width:350px;max-height:80vh;overflow:auto}
+input,textarea{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px solid #ccc;box-sizing:border-box}
+.pass-wrap{position:relative}.pass-wrap input{padding-right:40px}
+.eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer}
+.cat-btn{padding:6px 12px;margin:3px;border:1px solid green;border-radius:20px;background:white;cursor:pointer}.cat-btn.active{background:green;color:white}
+.cat-wrap{display:flex;flex-wrap:wrap;justify-content:center;padding:8px}
+#installScreen{position:fixed;top:0;left:0;width:100%;height:100%;background:#0a8a0a;z-index:9999;display:flex;justify-content:center;align-items:center;padding:20px;box-sizing:border-box}
+.installBox{background:white;border-radius:20px;padding:25px;width:100%;max-width:360px;text-align:center}
+.badge{position:absolute;top:8px;left:8px;padding:3px 8px;border-radius:10px;font-size:10px;font-weight:bold;color:white}
+.badge-new{background:green}.badge-used{background:orange}
+.desc{font-size:11px;color:#555;margin:4px 0;height:28px;overflow:hidden}
+.apk-banner{background:#FFEB3B;color:#000;text-align:center;padding:8px;font-size:13px;font-weight:bold;position:sticky;top:0;z-index:1000}
+.apk-banner a{background:#0a8a0a;color:white;padding:4px 12px;border-radius:20px;text-decoration:none;margin-left:8px}
+</style></head><body>
+
+<div class="apk-banner">📱 Android App Ready! <a href="https://github.com/Mahashifah/Mbale-Mini-Sales/releases/download/v1.0/_Mbale_Mini_Sales_20313954.apk">📥 Download APK 31.6MB</a></div>
+
+<div id="installScreen"><div class="installBox"><img src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png" style="width:90px"><h2 style="color:#0a8a0a">Mbale Mini Sales</h2><p><b>Buy & Sell Fast in Mbale</b></p>
+<a href="https://github.com/Mahashifah/Mbale-Mini-Sales/releases/download/v1.0/_Mbale_Mini_Sales_20313954.apk" style="display:block;width:100%;padding:14px;background:#0a8a0a;color:white;border-radius:10px;font-size:17px;font-weight:bold;text-decoration:none;box-sizing:border-box">📥 DOWNLOAD APK NOW</a>
+<p style="margin:10px 0">OR</p>
+<button id="installBtnMain" style="width:100%;padding:12px;background:#25D366;color:white;border:none;border-radius:10px;font-size:14px;font-weight:bold">Install Website Version</button>
+<p id="installMsg" style="color:green;font-weight:bold;font-size:13px"></p><div style="margin-top:10px"><button onclick="continueToSite()" style="background:none;border:none;color:#666;text-decoration:underline;cursor:pointer;font-size:13px">Skip & Continue to Website</button></div></div></div>
+
+<div class="topbar"><span>Mbale Mini Sales</span><div><span id="userInfo"></span> <a href="download.html" style="background:#FFEB3B;color:black;padding:4px 10px;border-radius:15px;text-decoration:none;font-weight:bold;font-size:12px;margin-right:5px">📥 APK</a><button onclick="openAuth('register')" style="background:white;color:green;border:none;padding:5px 12px;border-radius:15px;font-weight:bold" id="loginBtn">Login</button><button onclick="logout()" id="logoutBtn" style="display:none;background:red;color:white;border:none;padding:5px 10px;border-radius:15px">Logout</button></div></div>
+<div class="header"><h2 style="margin:5px">Buy & Sell Fast in Mbale</h2><input id="searchInput" placeholder="Search..." onkeyup="searchProducts()" style="width:90%;padding:10px;border-radius:20px;border:none"><br><button onclick="loadData()" style="margin-top:8px;background:white;color:green;border:none;padding:5px 15px;border-radius:15px;font-size:12px">🔄 Refresh Products</button></div>
+<div class="cat-wrap">
+<button class="cat-btn active" onclick="filterCat('all')">All</button><button class="cat-btn" onclick="filterCat('phones')">Phones</button><button class="cat-btn" onclick="filterCat('gadgets')">Gadgets</button><button class="cat-btn" onclick="filterCat('electricals')">Electricals</button><button class="cat-btn" onclick="filterCat('houses')">Houses</button><button class="cat-btn" onclick="filterCat('plots')">Plots</button><button class="cat-btn" onclick="filterCat('rentals')">Rentals</button><button class="cat-btn" onclick="filterCat('cars')">Cars</button><button class="cat-btn" onclick="filterCat('motorcycles')">Motorcycles</button><button class="cat-btn" onclick="filterCat('shoes')">Shoes</button><button class="cat-btn" onclick="filterCat('clothes')">Clothes</button><button class="cat-btn" onclick="filterCat('bags')">Bags</button><button class="cat-btn" onclick="filterCat('advertising')">Advertising</button><button class="cat-btn" onclick="filterCat('others')">Others</button>
 </div>
-<p style="margin-top:15px"><a href="https://mahashifah.github.io/Mbale-Mini-Sales/" style="color:#0a8a0a;font-size:14px">Or use Website Version</a></p>
-</div>
-</body>
-</html>
+<div id="products" class="products">Loading...</div>
+
+<div class="modal" id="descModal"><div class="modal-content"><h3 id="dTitle"></h3><img id="dImg" style="width:100%;border-radius:10px"><p id="dPrice" style="color:green;font-weight:bold"></p><p id="dCond"></p><p id="dDesc" style="font-size:14px;color:#333;white-space:pre-wrap"></p><button id="dOrder" class="btn" style="width:100%;padding:12px;font-size:14px">Order on WhatsApp</button><button onclick="closeDesc()" style="width:100%;background:#ccc;margin-top:8px;padding:8px;border:none;border-radius:8px">Close</button></div></div>
+
+<div class="modal" id="authModal"><div class="modal-content"><h3 id="authTitle">Create Account</h3><input id="authName" placeholder="Your Full Name"><input id="authPhone" placeholder="Phone"><div class="pass-wrap"><input id="authPass" type="password" placeholder="Password"><span class="eye" onclick="toggleEye('authPass')">👁️</span></div><div class="pass-wrap" id="confirmWrap"><input id="authConfirm" type="password" placeholder="Confirm Password"><span class="eye" onclick="toggleEye('authConfirm')">👁️</span></div><button onclick="doAuth()" style="width:100%;padding:10px;background:green;color:white;border:none;border-radius:8px;margin-top:8px" id="authActionBtn">Create Account</button><p style="font-size:13px;text-align:center"><span id="switchText">Have account?</span> <a href="#" onclick="toggleAuthMode()" id="switchLink" style="color:green;font-weight:bold">Login</a></p><p id="authMsg" style="color:red;font-size:13px"></p><button onclick="closeAuth()" style="width:100%;background:#ccc;margin-top:5px;padding:8px;border:none;border-radius:8px">Close</button></div></div>
+
+<footer style="text-align:center;padding:15px;background:#333;color:white"><p>📞 0795336227 | 0743788078</p><p><a href="download.html" style="color:#FFEB3B">📥 Download Android APK</a></p><p style="font-size:12px;color:#ccc">© Mbale Mini Sales</p></footer>
+
+<script>
+const API="https://api.npoint.io/a3c7715c362f130b7d58";
+let products=[], users=[], mode='register', currentUser=JSON.parse(localStorage.getItem('mbaleUser')||'null'), deferredPrompt=null;
+function checkFirstScreen(){let hasSeen=localStorage.getItem('mbaleInstallSeen');let isStandalone=window.matchMedia('(display-mode: standalone)').matches;if(hasSeen || isStandalone || currentUser){document.getElementById('installScreen').style.display='none';}else{document.getElementById('installScreen').style.display='flex';}}
+function continueToSite(){localStorage.setItem('mbaleInstallSeen','yes');document.getElementById('installScreen').style.display='none';}
+window.addEventListener('beforeinstallprompt', e=>{e.preventDefault();deferredPrompt=e;});
+document.getElementById('installBtnMain').addEventListener('click', async()=>{if(deferredPrompt){deferredPrompt.prompt();let c=await deferredPrompt.userChoice;if(c.outcome==='accepted')setTimeout(()=>continueToSite(),1000);deferredPrompt=null;}else{document.getElementById('installMsg').innerHTML='iPhone: Share → Add to Home Screen<br>Android: Menu → Add to Home Screen';}});
+function updateUI(){if(currentUser){document.getElementById('userInfo').innerText='Hi, '+currentUser.name;document.getElementById('loginBtn').style.display='none';document.getElementById('logoutBtn').style.display='inline';}else{document.getElementById('userInfo').innerText='';document.getElementById('loginBtn').style.display='inline';document.getElementById('logoutBtn').style.display='none';}}updateUI();
+function toggleEye(id){let i=document.getElementById(id);i.type=i.type==='password'?'text':'password';}
+async function loadData(){
+try{
+let r=await fetch(API+"?t="+Date.now(),{cache:"no-store"});
+let data=await r.json();
+products=data.products||[];users=data.users||[];
+showProducts(products);
+}catch(e){document.getElementById('products').innerHTML='Error loading, click Refresh';}
+}
+function showProducts(list){let d=document.getElementById('products');d.innerHTML='';if(!list.length){d.innerHTML='<p style=text-align:center;width:100%>No products</p>';return;}list.forEach((p,i)=>{let cond=p.cond||'Brand New';let badgeClass=cond==='Brand New'?'badge-new':'badge-used';let shortDesc=(p.desc||'').substring(0,40);d.innerHTML+=`<div class=card><span class="badge ${badgeClass}">${cond}</span><img src="${p.img}" onclick="openDesc(${i})"><h3 style=font-size:13px>${p.name}</h3><p class=price>${p.price}</p><p class=desc>${shortDesc}${(p.desc&&p.desc.length>40)?'...':''}</p><p style=font-size:10px;color:#666>${p.cat}</p><button class=btn btn2 onclick="openDesc(${i})">View Details</button><button class=btn onclick="orderProduct('${p.name.replace(/'/g,"")}','${p.price}','${cond}')">WhatsApp</button></div>`});}
+let curProd=null;
+function openDesc(i){curProd=products[i];document.getElementById('dTitle').innerText=curProd.name;document.getElementById('dImg').src=curProd.img;document.getElementById('dPrice').innerText=curProd.price+' - '+(curProd.cat||'');document.getElementById('dCond').innerHTML=`Condition: <b style=color:${curProd.cond==='Brand New'?'green':'orange'}>${curProd.cond||'Brand New'}</b>`;document.getElementById('dDesc').innerText=curProd.desc||'No description';document.getElementById('dOrder').onclick=()=>orderProduct(curProd.name,curProd.price,curProd.cond);document.getElementById('descModal').style.display='flex';}
+function closeDesc(){document.getElementById('descModal').style.display='none';}
+function orderProduct(name,price,cond){if(!currentUser){alert('Login first!');openAuth('register');return;}let msg=`Hi, I am ${currentUser.name} (${currentUser.phone}). I want: ${name} - ${price} (${cond||''})%0A%0ADescription: ${(curProd&&curProd.desc)?curProd.desc:''}%0A%0AFrom Mbale Mini Sales`;window.open(`https://wa.me/256795336227?text=${encodeURIComponent(msg)}`,'_blank');}
+function openAuth(m){mode=m||'register';setAuthMode();document.getElementById('authModal').style.display='flex';}
+function closeAuth(){document.getElementById('authModal').style.display='none';}
+function setAuthMode(){if(mode==='register'){document.getElementById('authTitle').innerText='Create Account';document.getElementById('authName').style.display='block';document.getElementById('confirmWrap').style.display='block';document.getElementById('authActionBtn').innerText='Create Account';document.getElementById('switchText').innerText='Have account?';document.getElementById('switchLink').innerText='Login';}else{document.getElementById('authTitle').innerText='Login';document.getElementById('authName').style.display='none';document.getElementById('confirmWrap').style.display='none';document.getElementById('authActionBtn').innerText='Login';document.getElementById('switchText').innerText='No account?';document.getElementById('switchLink').innerText='Register';}document.getElementById('authMsg').innerText='';}
+function toggleAuthMode(){mode=mode==='register'?'login':'register';setAuthMode();}
+async function doAuth(){let name=document.getElementById('authName').value.trim(),phone=document.getElementById('authPhone').value.trim(),pass=document.getElementById('authPass').value.trim(),conf=document.getElementById('authConfirm').value.trim();if(!phone||!pass){document.getElementById('authMsg').innerText='Enter phone and password';return;}if(mode==='register'){if(!name){document.getElementById('authMsg').innerText='Enter name';return;}if(pass!==conf){document.getElementById('authMsg').innerText='Passwords no match';return;}if(users.find(u=>u.phone===phone)){document.getElementById('authMsg').innerText='Already registered, Login';mode='login';setAuthMode();return;}users.push({name,phone,password:pass});await saveData();currentUser={name,phone};localStorage.setItem('mbaleUser',JSON.stringify(currentUser));updateUI();closeAuth();}else{let u=users.find(u=>u.phone===phone&&u.password===pass);if(!u){document.getElementById('authMsg').innerText='Wrong phone or password';return;}currentUser={name:u.name,phone:u.phone};localStorage.setItem('mbaleUser',JSON.stringify(currentUser));updateUI();closeAuth();}}
+async function saveData(){await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({products,users})});}
+function logout(){localStorage.removeItem('mbaleUser');currentUser=null;updateUI();}
+function filterCat(c){document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');if(c==='all')showProducts(products);else showProducts(products.filter(i=>i.cat===c));}
+function searchProducts(){let q=document.getElementById('searchInput').value.toLowerCase();showProducts(products.filter(i=>i.name.toLowerCase().includes(q)||(i.desc||'').toLowerCase().includes(q)));}
+loadData();checkFirstScreen();
+setInterval(loadData,15000);
+</script></body></html>
