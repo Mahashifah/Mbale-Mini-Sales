@@ -25,7 +25,22 @@ input,textarea{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px
 .desc{font-size:11px;color:#555;margin:4px 0;height:28px;overflow:hidden}
 .apk-banner{background:#FFEB3B;color:#000;text-align:center;padding:8px;font-size:13px;font-weight:bold;position:sticky;top:0;z-index:1000}
 .apk-banner a{background:#0a8a0a;color:white;padding:4px 12px;border-radius:20px;text-decoration:none;margin-left:8px}
+/* FAST LOADER FOR APK */
+#loader{position:fixed;top:0;left:0;width:100%;height:100%;background:#ffffff;z-index:100000;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.loader-logo{width:90px;height:90px;background:#0a8a0a;border-radius:20px;display:flex;justify-content:center;align-items:center;animation:pulse 1.2s infinite}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
+.spinner{width:40px;height:40px;border:4px solid #ddd;border-top:4px solid #0a8a0a;border-radius:50%;animation:spin 1s linear infinite;margin-top:15px}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 </style></head><body>
+
+<!-- INSTANT LOADER - APK will show this in 0.5 sec -->
+<div id="loader">
+<div class="loader-logo"><span style="font-size:45px">🛒</span></div>
+<h2 style="color:#0a8a0a;margin:15px 0 5px">Mbale Mini Sales</h2>
+<p style="color:#666;margin:0;font-size:13px">Loading products...</p>
+<div class="spinner"></div>
+<p style="color:#999;font-size:11px;margin-top:10px">Fast & Secure in Mbale</p>
+</div>
 
 <div class="apk-banner">📱 Android App Ready! <a href="https://github.com/Mahashifah/Mbale-Mini-Sales/releases/download/v1.0/_Mbale_Mini_Sales_20313954.apk">📥 Download APK 31.6MB</a></div>
 
@@ -57,13 +72,22 @@ window.addEventListener('beforeinstallprompt', e=>{e.preventDefault();deferredPr
 document.getElementById('installBtnMain').addEventListener('click', async()=>{if(deferredPrompt){deferredPrompt.prompt();let c=await deferredPrompt.userChoice;if(c.outcome==='accepted')setTimeout(()=>continueToSite(),1000);deferredPrompt=null;}else{document.getElementById('installMsg').innerHTML='iPhone: Share → Add to Home Screen<br>Android: Menu → Add to Home Screen';}});
 function updateUI(){if(currentUser){document.getElementById('userInfo').innerText='Hi, '+currentUser.name;document.getElementById('loginBtn').style.display='none';document.getElementById('logoutBtn').style.display='inline';}else{document.getElementById('userInfo').innerText='';document.getElementById('loginBtn').style.display='inline';document.getElementById('logoutBtn').style.display='none';}}updateUI();
 function toggleEye(id){let i=document.getElementById(id);i.type=i.type==='password'?'text':'password';}
-async function loadData(){try{let r=await fetch(API+"?t="+Date.now(),{cache:"no-store"});let data=await r.json();products=data.products||[];users=data.users||[];showProducts(products);}catch(e){document.getElementById('products').innerHTML='Error loading, click Refresh';}}
-
-// FIXED: NO MORE WRONG DESCRIPTION BUG
+async function loadData(){
+try{
+let r=await fetch(API+"?t="+Date.now(),{cache:"no-store"});
+let data=await r.json();
+products=data.products||[];users=data.users||[];
+showProducts(products);
+}catch(e){
+document.getElementById('products').innerHTML='Error loading, click Refresh';
+document.getElementById('loader').style.display='none';
+}
+}
 function showProducts(list){
 let d=document.getElementById('products');
 d.innerHTML='';
-if(!list.length){d.innerHTML='<p style=text-align:center;width:100%>No products</p>';return;}
+if(!list.length){d.innerHTML='<p style=text-align:center;width:100%>No products</p>';}
+else{
 list.forEach((p)=>{
 let cond=p.cond||'Brand New';
 let badgeClass=cond==='Brand New'?'badge-new':'badge-used';
@@ -72,10 +96,10 @@ let safeName=p.name.replace(/'/g,"\\'").replace(/"/g,'');
 d.innerHTML+=`<div class=card><span class="badge ${badgeClass}">${cond}</span><img src="${p.img}" onclick="openDescByName('${safeName}')" onerror="this.src='https://via.placeholder.com/140'"><h3 style=font-size:13px>${p.name}</h3><p class=price>${p.price}</p><p class=desc>${shortDesc}${(p.desc&&p.desc.length>40)?'...':''}</p><p style=font-size:10px;color:#666>${p.cat}</p><button class=btn btn2 onclick="openDescByName('${safeName}')">View Details</button><button class=btn onclick="orderByName('${safeName}')">WhatsApp</button></div>`;
 });
 }
-function openDescByName(name){
-let idx=products.findIndex(x=>x.name===name);
-if(idx>=0) openDesc(idx);
+// HIDE LOADER AFTER PRODUCTS SHOW - APK INSTANT FEEL
+document.getElementById('loader').style.display='none';
 }
+function openDescByName(name){let idx=products.findIndex(x=>x.name===name);if(idx>=0) openDesc(idx);}
 function orderByName(name){
 let p=products.find(x=>x.name===name);
 if(!p){alert('Product not found, refresh');return;}
@@ -83,7 +107,6 @@ if(!currentUser){alert('Login first!');openAuth('register');return;}
 let msg=`Hi, I am ${currentUser.name} (${currentUser.phone}). I want: ${p.name} - ${p.price} (${p.cond||''})\n\nDescription: ${p.desc||'No description'}\n\nFrom Mbale Mini Sales`;
 window.open(`https://wa.me/256795336227?text=${encodeURIComponent(msg)}`,'_blank');
 }
-
 let curProd=null;
 function openDesc(i){curProd=products[i];document.getElementById('dTitle').innerText=curProd.name;document.getElementById('dImg').src=curProd.img;document.getElementById('dPrice').innerText=curProd.price+' - '+(curProd.cat||'');document.getElementById('dCond').innerHTML=`Condition: <b style=color:${curProd.cond==='Brand New'?'green':'orange'}>${curProd.cond||'Brand New'}</b>`;document.getElementById('dDesc').innerText=curProd.desc||'No description';document.getElementById('dOrder').onclick=()=>orderByName(curProd.name);document.getElementById('descModal').style.display='flex';}
 function closeDesc(){document.getElementById('descModal').style.display='none';}
@@ -99,4 +122,6 @@ function filterCat(c){document.querySelectorAll('.cat-btn').forEach(b=>b.classLi
 function searchProducts(){let q=document.getElementById('searchInput').value.toLowerCase();showProducts(products.filter(i=>i.name.toLowerCase().includes(q)||(i.desc||'').toLowerCase().includes(q)));}
 loadData();checkFirstScreen();
 setInterval(loadData,15000);
+// Safety: hide loader after 5 sec even if API slow
+setTimeout(()=>{document.getElementById('loader').style.display='none';},5000);
 </script></body></html>
