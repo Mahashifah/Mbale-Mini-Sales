@@ -57,19 +57,37 @@ window.addEventListener('beforeinstallprompt', e=>{e.preventDefault();deferredPr
 document.getElementById('installBtnMain').addEventListener('click', async()=>{if(deferredPrompt){deferredPrompt.prompt();let c=await deferredPrompt.userChoice;if(c.outcome==='accepted')setTimeout(()=>continueToSite(),1000);deferredPrompt=null;}else{document.getElementById('installMsg').innerHTML='iPhone: Share → Add to Home Screen<br>Android: Menu → Add to Home Screen';}});
 function updateUI(){if(currentUser){document.getElementById('userInfo').innerText='Hi, '+currentUser.name;document.getElementById('loginBtn').style.display='none';document.getElementById('logoutBtn').style.display='inline';}else{document.getElementById('userInfo').innerText='';document.getElementById('loginBtn').style.display='inline';document.getElementById('logoutBtn').style.display='none';}}updateUI();
 function toggleEye(id){let i=document.getElementById(id);i.type=i.type==='password'?'text':'password';}
-async function loadData(){
-try{
-let r=await fetch(API+"?t="+Date.now(),{cache:"no-store"});
-let data=await r.json();
-products=data.products||[];users=data.users||[];
-showProducts(products);
-}catch(e){document.getElementById('products').innerHTML='Error loading, click Refresh';}
+async function loadData(){try{let r=await fetch(API+"?t="+Date.now(),{cache:"no-store"});let data=await r.json();products=data.products||[];users=data.users||[];showProducts(products);}catch(e){document.getElementById('products').innerHTML='Error loading, click Refresh';}}
+
+// FIXED: NO MORE WRONG DESCRIPTION BUG
+function showProducts(list){
+let d=document.getElementById('products');
+d.innerHTML='';
+if(!list.length){d.innerHTML='<p style=text-align:center;width:100%>No products</p>';return;}
+list.forEach((p)=>{
+let cond=p.cond||'Brand New';
+let badgeClass=cond==='Brand New'?'badge-new':'badge-used';
+let shortDesc=(p.desc||'').substring(0,40);
+let safeName=p.name.replace(/'/g,"\\'").replace(/"/g,'');
+d.innerHTML+=`<div class=card><span class="badge ${badgeClass}">${cond}</span><img src="${p.img}" onclick="openDescByName('${safeName}')" onerror="this.src='https://via.placeholder.com/140'"><h3 style=font-size:13px>${p.name}</h3><p class=price>${p.price}</p><p class=desc>${shortDesc}${(p.desc&&p.desc.length>40)?'...':''}</p><p style=font-size:10px;color:#666>${p.cat}</p><button class=btn btn2 onclick="openDescByName('${safeName}')">View Details</button><button class=btn onclick="orderByName('${safeName}')">WhatsApp</button></div>`;
+});
 }
-function showProducts(list){let d=document.getElementById('products');d.innerHTML='';if(!list.length){d.innerHTML='<p style=text-align:center;width:100%>No products</p>';return;}list.forEach((p,i)=>{let cond=p.cond||'Brand New';let badgeClass=cond==='Brand New'?'badge-new':'badge-used';let shortDesc=(p.desc||'').substring(0,40);d.innerHTML+=`<div class=card><span class="badge ${badgeClass}">${cond}</span><img src="${p.img}" onclick="openDesc(${i})"><h3 style=font-size:13px>${p.name}</h3><p class=price>${p.price}</p><p class=desc>${shortDesc}${(p.desc&&p.desc.length>40)?'...':''}</p><p style=font-size:10px;color:#666>${p.cat}</p><button class=btn btn2 onclick="openDesc(${i})">View Details</button><button class=btn onclick="orderProduct('${p.name.replace(/'/g,"")}','${p.price}','${cond}')">WhatsApp</button></div>`});}
+function openDescByName(name){
+let idx=products.findIndex(x=>x.name===name);
+if(idx>=0) openDesc(idx);
+}
+function orderByName(name){
+let p=products.find(x=>x.name===name);
+if(!p){alert('Product not found, refresh');return;}
+if(!currentUser){alert('Login first!');openAuth('register');return;}
+let msg=`Hi, I am ${currentUser.name} (${currentUser.phone}). I want: ${p.name} - ${p.price} (${p.cond||''})\n\nDescription: ${p.desc||'No description'}\n\nFrom Mbale Mini Sales`;
+window.open(`https://wa.me/256795336227?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
 let curProd=null;
-function openDesc(i){curProd=products[i];document.getElementById('dTitle').innerText=curProd.name;document.getElementById('dImg').src=curProd.img;document.getElementById('dPrice').innerText=curProd.price+' - '+(curProd.cat||'');document.getElementById('dCond').innerHTML=`Condition: <b style=color:${curProd.cond==='Brand New'?'green':'orange'}>${curProd.cond||'Brand New'}</b>`;document.getElementById('dDesc').innerText=curProd.desc||'No description';document.getElementById('dOrder').onclick=()=>orderProduct(curProd.name,curProd.price,curProd.cond);document.getElementById('descModal').style.display='flex';}
+function openDesc(i){curProd=products[i];document.getElementById('dTitle').innerText=curProd.name;document.getElementById('dImg').src=curProd.img;document.getElementById('dPrice').innerText=curProd.price+' - '+(curProd.cat||'');document.getElementById('dCond').innerHTML=`Condition: <b style=color:${curProd.cond==='Brand New'?'green':'orange'}>${curProd.cond||'Brand New'}</b>`;document.getElementById('dDesc').innerText=curProd.desc||'No description';document.getElementById('dOrder').onclick=()=>orderByName(curProd.name);document.getElementById('descModal').style.display='flex';}
 function closeDesc(){document.getElementById('descModal').style.display='none';}
-function orderProduct(name,price,cond){if(!currentUser){alert('Login first!');openAuth('register');return;}let msg=`Hi, I am ${currentUser.name} (${currentUser.phone}). I want: ${name} - ${price} (${cond||''})%0A%0ADescription: ${(curProd&&curProd.desc)?curProd.desc:''}%0A%0AFrom Mbale Mini Sales`;window.open(`https://wa.me/256795336227?text=${encodeURIComponent(msg)}`,'_blank');}
+function orderProduct(name,price,cond){orderByName(name);}
 function openAuth(m){mode=m||'register';setAuthMode();document.getElementById('authModal').style.display='flex';}
 function closeAuth(){document.getElementById('authModal').style.display='none';}
 function setAuthMode(){if(mode==='register'){document.getElementById('authTitle').innerText='Create Account';document.getElementById('authName').style.display='block';document.getElementById('confirmWrap').style.display='block';document.getElementById('authActionBtn').innerText='Create Account';document.getElementById('switchText').innerText='Have account?';document.getElementById('switchLink').innerText='Login';}else{document.getElementById('authTitle').innerText='Login';document.getElementById('authName').style.display='none';document.getElementById('confirmWrap').style.display='none';document.getElementById('authActionBtn').innerText='Login';document.getElementById('switchText').innerText='No account?';document.getElementById('switchLink').innerText='Register';}document.getElementById('authMsg').innerText='';}
